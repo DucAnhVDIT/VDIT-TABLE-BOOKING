@@ -16,7 +16,7 @@ import {
 import NavItem from "./NavItem";
 
 const SidebBar = () => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 

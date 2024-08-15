@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Eye, Edit, Trash2, Menu, ChevronDown } from "lucide-react";
+import {
+  PlusCircle,
+  Eye,
+  Edit,
+  Trash2,
+  Menu,
+  ChevronDown,
+  CalendarIcon,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -11,7 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import {
   DropdownMenu,
@@ -19,6 +26,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 function TableReservation({ isActive, onClick }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -33,13 +47,48 @@ function TableReservation({ isActive, onClick }) {
     { id: "1", shape: "square", size: "small" },
     { id: "S2", shape: "circle", size: "small" },
     { id: "T5", shape: "circle", size: "medium" },
-    { id: "231234", shape: "circle", size: "medium" },
+    {
+      id: "231234",
+      shape: "circle",
+      size: "medium",
+    },
     { id: "6B", shape: "rectangle", size: "medium" },
     { id: "6A", shape: "rectangle", size: "medium" },
     { id: "S4", shape: "circle", size: "medium" },
     { id: "S6", shape: "circle", size: "large" },
     { id: "VIP", shape: "circle", size: "large" },
   ];
+
+  const renderTable = (table) => {
+    const tableClasses = `absolute bg-gray-300 flex items-center justify-center text-xs
+      ${table.shape === "circle" ? "rounded-full" : "rounded-md"}
+      ${
+        table.shape === "rectangle" && table.size === "large" ? "w-40 h-20" : ""
+      }
+      ${
+        table.shape === "rectangle" && table.size === "medium"
+          ? "w-32 h-16"
+          : ""
+      }
+      ${
+        table.shape === "rectangle" && table.size === "small" ? "w-24 h-12" : ""
+      }
+      ${table.shape === "square" ? "w-16 h-16" : ""}
+      ${table.shape === "circle" && table.size === "large" ? "w-32 h-32" : ""}
+      ${table.shape === "circle" && table.size === "medium" ? "w-24 h-24" : ""}
+      ${table.shape === "circle" && table.size === "small" ? "w-16 h-16" : ""}
+    `;
+
+    return (
+      <div
+        key={table.id}
+        className={tableClasses}
+        style={{ left: `${table.x}px`, top: `${table.y}px` }}
+      >
+        {table.id}
+      </div>
+    );
+  };
 
   const bookings = [
     {
@@ -127,57 +176,7 @@ function TableReservation({ isActive, onClick }) {
                 className="bg-yellow-100 p-2 md:p-4 rounded-lg relative overflow-auto"
                 style={{ height: "500px", minWidth: "300px" }}
               >
-                {tables.map((table) => (
-                  <div
-                    key={table.id}
-                    className={`absolute bg-gray-300 flex items-center justify-center text-xs md:text-sm
-                      ${
-                        table.shape === "circle" ? "rounded-full" : "rounded-md"
-                      }
-                      ${
-                        table.shape === "rectangle" && table.size === "large"
-                          ? "w-24 h-12 md:w-32 md:h-16"
-                          : ""
-                      }
-                      ${
-                        table.shape === "rectangle" && table.size === "medium"
-                          ? "w-20 h-10 md:w-24 md:h-12"
-                          : ""
-                      }
-                      ${
-                        table.shape === "rectangle" && table.size === "small"
-                          ? "w-14 h-10 md:w-16 md:h-12"
-                          : ""
-                      }
-                      ${
-                        table.shape === "square"
-                          ? "w-10 h-10 md:w-12 md:h-12"
-                          : ""
-                      }
-                      ${
-                        table.shape === "circle" && table.size === "large"
-                          ? "w-20 h-20 md:w-24 md:h-24"
-                          : ""
-                      }
-                      ${
-                        table.shape === "circle" && table.size === "medium"
-                          ? "w-14 h-14 md:w-16 md:h-16"
-                          : ""
-                      }
-                      ${
-                        table.shape === "circle" && table.size === "small"
-                          ? "w-10 h-10 md:w-12 md:h-12"
-                          : ""
-                      }
-                    `}
-                    style={{
-                      left: `${Math.random() * 80}%`,
-                      top: `${Math.random() * 80}%`,
-                    }}
-                  >
-                    {table.id}
-                  </div>
-                ))}
+                {tables.map(renderTable)}
               </div>
             </TabsContent>
             <TabsContent value="Second Floor">
@@ -188,6 +187,25 @@ function TableReservation({ isActive, onClick }) {
 
         {/* Bookings Section */}
         <div className="w-full lg:w-1/2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-start text-left font-normal mb-4"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
           <div className="bg-primary p-4 rounded-lg mb-4 text-white flex justify-between items-center">
             <h2 className="font-bold">Total Booking: {bookings.length}</h2>
             <Button
