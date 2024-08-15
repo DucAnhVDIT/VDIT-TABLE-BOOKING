@@ -29,7 +29,6 @@ function TableReservation ({ isActive, onClick }) {
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
-
       <div className="flex space-x-4">
         <div className="w-2/3">
           <Tabs value={selectedFloor} onValueChange={setSelectedFloor}>
@@ -93,17 +92,6 @@ function TableReservation ({ isActive, onClick }) {
             <Button size="sm">Walk In</Button>
             <Button size="sm">Add</Button>
           </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 mt-4">
-        <div className="bg-gray-100 p-4 rounded-lg">
-          <h3 className="font-bold mb-2">Guest Request</h3>
-          <textarea className="w-full h-24 p-2 rounded" />
-        </div>
-        <div className="bg-gray-100 p-4 rounded-lg">
-          <h3 className="font-bold mb-2">Restaurant Notes</h3>
-          <textarea className="w-full h-24 p-2 rounded" />
         </div>
       </div>
     </div>

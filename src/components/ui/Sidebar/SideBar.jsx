@@ -10,10 +10,13 @@ import {
   BarChart,
   Settings,
   HelpCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import NavItem from "./NavItem";
 
-const Sidebar = () => {
+const SidebBar = () => {
+  const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -21,50 +24,77 @@ const Sidebar = () => {
     navigate(path);
   };
 
+  const toggleSidebar = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
-    <div className="w-64 flex flex-col border-r h-full">
-      <div className="p-4 flex items-center space-x-2">
-        <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
-          <Utensils className="text-white" size={20} />
-        </div>
-        <span className="font-bold text-xl">Viet Cafe</span>
+    <div className={`${isExpanded ? 'w-64' : 'w-16'} flex flex-col border-r h-full transition-all duration-300 ease-in-out relative`}>
+      <div className={`p-4 flex items-center ${isExpanded ? 'justify-between' : 'justify-center'}`}>
+        {isExpanded ? (
+          <>
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
+                <Utensils className="text-white" size={20} />
+              </div>
+              <span className="font-bold text-xl">Viet Cafe</span>
+            </div>
+          </>
+        ) : (
+          <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
+            <Utensils className="text-white" size={20} />
+          </div>
+        )}
       </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute -right-3 top-5 bg-background border rounded-full"
+        onClick={toggleSidebar}
+      >
+        {isExpanded ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+      </Button>
       <ScrollArea className="flex-1">
-        <nav className="space-y-1 p-2">
+        <nav className={`space-y-1 p-2 ${isExpanded ? '' : 'flex flex-col items-center'}`}>
           <NavItem
             icon={<CalendarRange size={20} />}
             label="Table Reservation"
             isActive={location.pathname === '/table-reservation'}
             onClick={() => handleNavItemClick('/table-reservation')}
+            isExpanded={isExpanded}
           />
-          <NavItem 
-            icon={<FileText size={20} />} 
-            label="Reports" 
+          <NavItem
+            icon={<FileText size={20} />}
+            label="Reports"
             isActive={location.pathname === '/reports'}
             onClick={() => handleNavItemClick('/reports')}
+            isExpanded={isExpanded}
           />
-          <NavItem 
-            icon={<BarChart size={20} />} 
-            label="Restaurant Planner" 
+          <NavItem
+            icon={<BarChart size={20} />}
+            label="Restaurant Planner"
             isActive={location.pathname === '/restaurant-planner'}
             onClick={() => handleNavItemClick('/restaurant-planner')}
+            isExpanded={isExpanded}
           />
-          <NavItem 
-            icon={<Settings size={20} />} 
-            label="General Settings" 
+          <NavItem
+            icon={<Settings size={20} />}
+            label="General Settings"
             isActive={location.pathname === '/general-settings'}
             onClick={() => handleNavItemClick('/general-settings')}
+            isExpanded={isExpanded}
           />
-          <NavItem 
-            icon={<HelpCircle size={20} />} 
-            label="Support" 
+          <NavItem
+            icon={<HelpCircle size={20} />}
+            label="Support"
             isActive={location.pathname === '/support'}
             onClick={() => handleNavItemClick('/support')}
+            isExpanded={isExpanded}
           />
         </nav>
       </ScrollArea>
-      <div className="p-4 border-t">
-        <Button variant="ghost" className="w-full justify-start space-x-3">
+      <div className={`p-4 border-t ${isExpanded ? '' : 'flex justify-center'}`}>
+        <Button variant="ghost" className={`w-full justify-start space-x-3 ${isExpanded ? '' : 'p-0'}`}>
           <Avatar className="h-9 w-9">
             <AvatarImage
               src="https://github.com/shadcn.png"
@@ -72,14 +102,16 @@ const Sidebar = () => {
             />
             <AvatarFallback>RS</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col items-start">
-            <span className="font-medium">Rebecca Smith</span>
-            <span className="text-xs text-gray-500">Manager</span>
-          </div>
+          {isExpanded && (
+            <div className="flex flex-col items-start">
+              <span className="font-medium">Rebecca Smith</span>
+              <span className="text-xs text-gray-500">Manager</span>
+            </div>
+          )}
         </Button>
       </div>
     </div>
   );
 };
 
-export default Sidebar;
+export default SidebBar;

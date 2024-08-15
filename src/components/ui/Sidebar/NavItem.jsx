@@ -1,30 +1,35 @@
-import React from "react";
-import { Button } from "../button";
-import { ChevronDown } from "lucide-react";
+import React from 'react';
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-const NavItem = ({ icon, label, badge, hasSubmenu, isActive, onClick }) => {
-  return (
-    <div>
-      <Button 
-      variant="ghost"
-      className={`w-full justify-start text-sm font-medium transition-colors hover:text-primary hover:bg-primary/10 ${
-        isActive 
-          ? 'text-primary bg-primary/10' 
-          : 'text-muted-foreground'
-      }`}
+const NavItem = ({ icon, label, isActive, onClick, isExpanded }) => {
+  const content = (
+    <Button 
+      variant={isActive ? "secondary" : "ghost"}
+      className={`w-full ${isExpanded ? 'justify-start' : 'justify-center'} ${isActive ? 'bg-primary/10 text-primary' : ''}`}
       onClick={onClick}
     >
       {icon}
-      <span className="ml-3 flex-1 text-left">{label}</span>
-      {badge && (
-        <span className="ml-auto bg-red-100 text-red-600 rounded-full px-2 py-0.5 text-xs">
-          {badge}
-        </span>
-      )}
-      {hasSubmenu && <ChevronDown size={16} className="ml-auto" />}
+      {isExpanded && <span className="ml-3">{label}</span>}
     </Button>
-    </div>
   );
+
+  if (!isExpanded) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {content}
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            <p>{label}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return content;
 };
 
 export default NavItem;
