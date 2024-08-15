@@ -104,7 +104,7 @@ const SidebBar = () => {
           </Avatar>
           {isExpanded && (
             <div className="flex flex-col items-start">
-              <span className="font-medium">Rebecca Smith</span>
+              <span className="font-medium">Duc Anh</span>
               <span className="text-xs text-gray-500">Manager</span>
             </div>
           )}
