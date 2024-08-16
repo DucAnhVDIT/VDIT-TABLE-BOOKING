@@ -9,6 +9,7 @@ import {
   Menu,
   ChevronDown,
   CalendarIcon,
+  CheckCircle,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,30 +34,31 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import StatusDropdown from "./Status";
+import BottomSection from "./Bottom";
+import AddNew from "./AddNew";
 
 function TableReservation({ isActive, onClick }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedFloor, setSelectedFloor] = useState("Main Floor");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [addNew, setAddNew] = useState(false)
+
+  const openAddNew = () => setAddNew(true);
+  const closeAddNew = () => setAddNew(false);
 
   const tables = [
-    { id: "8", shape: "rectangle", size: "large" },
-    { id: "6", shape: "rectangle", size: "medium" },
-    { id: "4", shape: "rectangle", size: "small" },
-    { id: "4A", shape: "rectangle", size: "small" },
-    { id: "1", shape: "square", size: "small" },
-    { id: "S2", shape: "circle", size: "small" },
-    { id: "T5", shape: "circle", size: "medium" },
-    {
-      id: "231234",
-      shape: "circle",
-      size: "medium",
-    },
-    { id: "6B", shape: "rectangle", size: "medium" },
-    { id: "6A", shape: "rectangle", size: "medium" },
-    { id: "S4", shape: "circle", size: "medium" },
-    { id: "S6", shape: "circle", size: "large" },
-    { id: "VIP", shape: "circle", size: "large" },
+    { id: "6", shape: "rectangle", size: "medium", x: 200, y: 50 },
+    { id: "4", shape: "rectangle", size: "small", x: 350, y: 50 },
+    { id: "4A", shape: "rectangle", size: "small", x: 500, y: 50 },
+    { id: "1", shape: "square", size: "small", x: 50, y: 200 },
+    { id: "S2", shape: "circle", size: "small", x: 200, y: 200 },
+    { id: "T5", shape: "circle", size: "medium", x: 350, y: 200 },
+    { id: "231234", shape: "circle", size: "medium", x: 500, y: 200 },
+    { id: "6B", shape: "rectangle", size: "medium", x: 50, y: 350 },
+    { id: "6A", shape: "rectangle", size: "medium", x: 200, y: 350 },
+    { id: "S4", shape: "circle", size: "medium", x: 350, y: 350 },
+    { id: "S6", shape: "circle", size: "large", x: 500, y: 350 },
   ];
 
   const renderTable = (table) => {
@@ -125,36 +127,36 @@ function TableReservation({ isActive, onClick }) {
     },
   ];
 
-  const statusColors = {
-    Confirmed: "bg-blue-100 text-blue-800",
-    Seated: "bg-green-100 text-green-800",
-    Waiting: "bg-yellow-100 text-yellow-800",
-    Completed: "bg-gray-100 text-gray-800",
-    Cancelled: "bg-red-100 text-red-800",
-  };
+  const capacity = { current: 75, total: 100 };
+  const waitingCustomers = [
+    { name: "John Doe", partySize: 2 },
+    { name: "Jane Smith", partySize: 4 },
+  ];
 
-  const StatusDropdown = ({ booking }) => (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className={`${statusColors[booking.status]} border-none w-32`}
-        >
-          {booking.status} <ChevronDown className="ml-2 h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        {Object.keys(statusColors).map((status) => (
-          <DropdownMenuItem
-            key={status}
-            onClick={() => handleStatusChange(booking, status)}
-          >
-            {status}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+  const ActionButtons = ({ booking }) => (
+    <div className="flex justify-end space-x-2">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-blue-500 hover:text-blue-700 hover:bg-blue-100"
+      >
+        <Eye className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-green-500 hover:text-green-700 hover:bg-green-100"
+      >
+        <CheckCircle className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-red-500 hover:text-red-700 hover:bg-red-100"
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </div>
   );
 
   return (
@@ -234,16 +236,8 @@ function TableReservation({ isActive, onClick }) {
                     <span>{booking.spend}</span>
                     <StatusDropdown booking={booking} />
                   </div>
-                  <div className="flex justify-end space-x-2 mt-2">
-                    <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <div className="flex justify-end mt-2">
+                    <ActionButtons booking={booking} />
                   </div>
                 </div>
               ))}
@@ -275,17 +269,7 @@ function TableReservation({ isActive, onClick }) {
                       <StatusDropdown booking={booking} />
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end space-x-2">
-                        <Button variant="ghost" size="icon">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <ActionButtons booking={booking} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -294,12 +278,17 @@ function TableReservation({ isActive, onClick }) {
           </div>
 
           <div className="mt-4">
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={openAddNew}>
               <PlusCircle className="mr-2 h-4 w-4" /> Add
             </Button>
           </div>
+
+          {addNew && (
+            <AddNew isOpen={addNew} onClose={closeAddNew} />
+          )}
         </div>
       </div>
+      <BottomSection capacity={capacity} waitingCustomers={waitingCustomers} />
     </div>
   );
 }
